@@ -1,0 +1,900 @@
+// BFS DFS LIST
+#include<stdio.h>
+#include<stdlib.h>
+
+#define SIZE 10
+
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+typedef struct Graph {
+    int numVertices;
+    Node** adjLists;
+} Graph;
+
+int queue[SIZE];
+int stack[SIZE];
+int front=-1;
+int rear=-1;
+int top=-1;
+
+Node* createNode(int v) {
+    Node* newNode = malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+
+Graph* createGraph(int vertices) {
+    Graph* graph = malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = malloc(vertices * sizeof(Node*));
+    for (int i = 0; i < vertices; i++)
+        graph->adjLists[i] = NULL;
+    return graph;
+}
+
+void addEdge(Graph* graph, int src, int dest) {
+    Node* newNode = createNode(dest);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+
+    newNode = createNode(src);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+
+void enqueue(int v){
+    if(front == -1)
+        front = 0;
+    rear++;
+    queue[rear] = v;
+}
+
+int dequeue(){
+    int v = queue[front];
+    front++;
+    return v;
+}
+
+void push(int v){
+    top++;
+    stack[top] = v;
+}
+
+int pop(){
+    int v = stack[top];
+    top--;
+    return v;
+}
+
+int emptyStack(){
+    return top == -1;
+}
+
+int emptyQueue() {
+    return front == -1 || front > rear;
+}
+
+void BFS(Graph* graph, int startVertex){
+    int visited[SIZE] = {0};
+    enqueue(startVertex);
+    visited[startVertex] = 1;
+
+    while (!emptyQueue()) {
+        int currentVertex = dequeue();
+        printf("%d ", currentVertex);
+
+        Node* temp = graph->adjLists[currentVertex];
+        while (temp) {
+            int adjVertex = temp->vertex;
+            if (visited[adjVertex] == 0) {
+                enqueue(adjVertex);
+                visited[adjVertex] = 1;
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+void DFS(Graph* graph, int startVertex){
+    int visited[SIZE] = {0};
+    push(startVertex);
+    visited[startVertex] = 1;
+    printf("%d ", startVertex);
+
+    while (!emptyStack()) {
+        int found = 0;
+        int currentVertex = stack[top];
+        Node* temp = graph->adjLists[currentVertex];
+        while (temp) {
+            int adjVertex = temp->vertex;
+            if (visited[adjVertex] == 0) {
+                printf("%d ", adjVertex);
+                push(adjVertex);
+                visited[adjVertex] = 1;
+                found = 1;
+                break;
+            }
+            temp = temp->next;
+        }
+        if (!found)
+            pop();
+    }
+}
+
+int main() {
+    Graph* graph = createGraph(8);
+    addEdge(graph, 0, 1);
+    addEdge(graph, 0, 2);
+    addEdge(graph, 2, 4);
+    addEdge(graph, 3, 4);
+    addEdge(graph, 3, 5);
+    addEdge(graph, 3, 6);
+    addEdge(graph, 6, 7);
+    addEdge(graph, 5, 7);
+    addEdge(graph, 0, 3);
+
+    printf("\nBFS traversal: ");
+    BFS(graph, 0);
+
+    printf("\nDFS traversal: ");
+    DFS(graph, 0);
+
+    return 0;
+}
+
+//BFS DFS MATRIX
+#include<stdio.h>
+#include<stdlib.h>
+#define SIZE 10
+int G[SIZE][SIZE];
+int queue[SIZE];
+int stack[SIZE];
+int front=-1;
+int rear=-1;
+int top=-1;
+void enqueue(int v){
+    if(front==-1){
+        front=0;
+    }
+    rear++;
+    queue[rear]=v;
+}
+int dequeue(){
+    int v;
+    v=queue[front];
+    front++;
+    return v;
+}
+void push(int v){
+    top++;
+    stack[top]=v;
+}
+int pop(){
+    int v=stack[top];
+    top--;
+    return v;
+}
+int emptyStack(){
+    if(top==-1){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+int emptyQueue() {
+    if (front == -1 || front > rear)
+        return 1;
+    else
+        return 0;
+}
+void BFS(int G[10][10],int v){
+    int s;
+    printf("Start vertex: ");
+    scanf("%d",&s);
+    enqueue(s);
+    int visited[v];
+    for(int i=0;i<=v;i++){
+        visited[i]=0;
+    }
+    visited[s]=1;
+    while (emptyQueue()==0){
+        int w=dequeue();
+        printf("%d ",w);
+    for(int i=1;i<=v;i++){
+        if(G[w][i]==1 && visited[i]==0){
+            enqueue(i);
+            visited[i]=1;
+        }
+    }
+    }
+}
+void DFS(int G[10][10], int v){
+    int s;
+    printf("Start vertex: ");
+    scanf("%d",&s);
+    push(s);
+    int visited[v];
+    for(int i=0;i<=v;i++){
+        visited[i]=0;
+    }
+    visited[s]=1;
+    printf("%d ",s);
+    while (top!=-1) {
+        int found = 0;
+        for (int i = 1; i <= v; i++) {
+            if (G[s][i] == 1 && visited[i] == 0) {
+                printf("%d ", i);
+                push(i);
+                visited[i] = 1;
+                s = i;
+                found = 1;
+                break;
+            }
+        }
+        if (found==0) {
+            pop();
+            if (top!=-1)
+            s = stack[top];
+        }
+    }
+}
+
+int main() {
+    int G[10][10], e, v;
+    v=8;
+    e=9;
+    for (int i = 0; i < v; i++){
+        for (int j = 0; j < v; j++)
+            G[i][j] = 0;
+    }
+   // DFS 0 1 2 4 3 5 7 6
+   // BFS 0 1 2 3 4 5 6 7
+    G[0][1]=G[1][0]=1;
+    G[0][2]=G[2][0]=1;
+    G[2][4]=G[4][2]=1;
+    G[3][4]=G[4][3]=1;
+    G[3][5]=G[5][3]=1;
+    G[3][6]=G[6][3]=1;
+    G[6][7]=G[7][6]=1;
+    G[5][7]=G[7][5]=1;
+    G[0][3]=G[3][0]=1;
+    printf("\nBFS traversal: ");
+    BFS(G, v);
+    printf("\nDFS traversal: ");
+    DFS(G, v);
+    return 0;
+}
+//PRIMS LIST
+#include<stdio.h>
+#include<stdlib.h>
+
+#define INF 9999999
+
+typedef struct Node {
+    int vertex;
+    int weight;
+    struct Node* next;
+} Node;
+
+typedef struct Graph {
+    int numVertices;
+    Node** adjLists;
+} Graph;
+
+Node* createNode(int v, int weight) {
+    Node* newNode = malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->weight = weight;
+    newNode->next = NULL;
+    return newNode;
+}
+
+Graph* createGraph(int vertices) {
+    Graph* graph = malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = malloc(vertices * sizeof(Node*));
+    for (int i = 0; i < vertices; i++)
+        graph->adjLists[i] = NULL;
+    return graph;
+}
+
+void addEdge(Graph* graph, int src, int dest, int weight) {
+    Node* newNode = createNode(dest, weight);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+
+    newNode = createNode(src, weight);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+
+void displayMST(int parent[], Graph* graph) {
+    for (int i = 1; i < graph->numVertices; i++) {
+        Node* temp = graph->adjLists[i];
+        while (temp) {
+            if (temp->vertex == parent[i])
+                printf("Edge %d-%d => %d\n", i, parent[i], temp->weight);
+            temp = temp->next;
+        }
+    }
+}
+
+void prims(Graph* graph, int start) {
+    int v = graph->numVertices;
+    int dist[v];
+    int parent[v];
+    int visited[v];
+    int index;
+    int min;
+
+    for (int i = 0; i < v; i++) {
+        visited[i] = 0;
+        dist[i] = INF;
+        parent[i] = -1;
+    }
+
+    dist[start] = 0;
+
+    for (int j = 0; j < v - 1; j++) {
+        min = INF;
+
+        for (int i = 0; i < v; i++) {
+            if (!visited[i] && dist[i] < min) {
+                min = dist[i];
+                index = i;
+            }
+        }
+
+        visited[index] = 1;
+
+        Node* temp = graph->adjLists[index];
+        while (temp) {
+            int adjVertex = temp->vertex;
+            if (!visited[adjVertex] && temp->weight < dist[adjVertex]) {
+                dist[adjVertex] = temp->weight;
+                parent[adjVertex] = index;
+            }
+            temp = temp->next;
+        }
+    }
+    displayMST(parent, graph);
+}
+
+int main() {
+    int v, e, start, end, weight, st;
+    printf("Enter number of vertices: ");
+    scanf("%d", &v);
+
+    Graph* graph = createGraph(v);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+
+    for (int i = 0; i < e; i++) {
+        printf("Enter edge %d (src dest weight): ", i + 1);
+        scanf("%d %d %d", &start, &end, &weight);
+        addEdge(graph, start, end, weight);
+    }
+
+    printf("Enter start vertex: ");
+    scanf("%d", &st);
+
+    prims(graph, st);
+
+    return 0;
+}
+
+// PRIMS MATRIX
+#include<stdio.h>
+void prims(int G[10][10],int start, int v){
+    int dist[v];
+    int parent[v];
+    int visited[v];
+    int index;
+    int min;
+    for(int i=0;i<v;i++){
+        visited[i]=0;
+        dist[i]=999;
+        parent[i]=-1;
+    }
+    dist[start]=0;
+    for(int j=0;j<v-1;j++){
+        min=999;
+        for(int i=0;i<v;i++){
+        if(visited[i]==0 && min>dist[i]){
+            min=dist[i];
+            index=i;
+        }
+        }
+    visited[index]=1;
+    for(int k=0;k<v;k++){
+        if(G[index][k]!=0 && visited[k]==0 && G[index][k] < dist[k]){
+            dist[k]=G[index][k];
+            parent[k]=index;
+        }
+    }
+    }
+    displayMST(parent,G,v);
+}
+
+void displayMST(int parent[], int G[10][10],int v){
+    for(int i=1;i<v;i++){
+        printf("Edge %d-%d => %d    ",i,parent[i],G[i][parent[i]]);
+    }
+}
+
+int main() {
+    int G[10][10], e, v,d, start, end,st;
+    printf("Enter number of vertices: ");
+    scanf("%d", &v);
+    for (int i = 0; i < v; i++)
+        for (int j = 0; j < v; j++)
+            G[i][j] = 0;
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+    for (int i = 0; i < e; i++) {
+        printf("Enter edge %d and its length(start end length): ", i + 1);
+        scanf("%d %d %d", &start, &end, &d);
+        G[start][end] = G[end][start] = d;
+    }
+    printf("Enter start vertex: ");
+    scanf("%d",&st);
+    prims(G,st,v);
+    return 0;
+}
+
+//KRUSHKALS LIST
+#include<stdio.h>
+#include<stdlib.h>
+
+#define INF 999
+
+typedef struct Edge {
+    int src, dest, weight;
+} Edge;
+
+typedef struct Graph {
+    int numVertices, numEdges;
+    Edge* edges;
+} Graph;
+
+typedef struct Subset {
+    int parent;
+    int rank;
+} Subset;
+
+Graph* createGraph(int vertices, int edges) {
+    Graph* graph = (Graph*) malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    graph->numEdges = edges;
+    graph->edges = (Edge*) malloc(edges * sizeof(Edge));
+    return graph;
+}
+
+int find(Subset subsets[], int i) {
+    if (subsets[i].parent != i)
+        subsets[i].parent = find(subsets, subsets[i].parent);
+    return subsets[i].parent;
+}
+
+void Union(Subset subsets[], int x, int y) {
+    int rootX = find(subsets, x);
+    int rootY = find(subsets, y);
+
+    if (subsets[rootX].rank < subsets[rootY].rank)
+        subsets[rootX].parent = rootY;
+    else if (subsets[rootX].rank > subsets[rootY].rank)
+        subsets[rootY].parent = rootX;
+    else {
+        subsets[rootY].parent = rootX;
+        subsets[rootX].rank++;
+    }
+}
+
+int compareEdges(const void* a, const void* b) {
+    Edge* a1 = (Edge*)a;
+    Edge* b1 = (Edge*)b;
+    return a1->weight > b1->weight;
+}
+
+void KruskalMST(Graph* graph) {
+    int V = graph->numVertices;
+    Edge result[V];
+    int e = 0;
+    int i = 0;
+
+    qsort(graph->edges, graph->numEdges, sizeof(graph->edges[0]), compareEdges);
+
+    Subset* subsets = (Subset*) malloc(V * sizeof(Subset));
+    for (int v = 0; v < V; ++v) {
+        subsets[v].parent = v;
+        subsets[v].rank = 0;
+    }
+
+    while (e < V - 1 && i < graph->numEdges) {
+        Edge nextEdge = graph->edges[i++];
+        int x = find(subsets, nextEdge.src);
+        int y = find(subsets, nextEdge.dest);
+
+        if (x != y) {
+            result[e++] = nextEdge;
+            Union(subsets, x, y);
+        }
+    }
+
+    printf("Edges in the constructed MST\n");
+    for (i = 0; i < e; ++i)
+        printf("%d -- %d == %d\n", result[i].src, result[i].dest, result[i].weight);
+    return;
+}
+
+int main() {
+    int V, E, src, dest, weight;
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+    printf("Enter number of edges: ");
+    scanf("%d", &E);
+
+    Graph* graph = createGraph(V, E);
+
+    for (int i = 0; i < E; i++) {
+        printf("Enter edge %d (src dest weight): ", i + 1);
+        scanf("%d %d %d", &src, &dest, &weight);
+        graph->edges[i].src = src;
+        graph->edges[i].dest = dest;
+        graph->edges[i].weight = weight;
+    }
+
+    KruskalMST(graph);
+
+    return 0;
+}
+
+//KRUSHKALS MATRIX
+#include<stdio.h>
+int u,v,a,b,n;
+int min,mincost=0,ne=0;
+int G[10][10], parent[10];
+
+int findParent(int v){
+    while(parent[v]){
+        v=parent[v];
+    }
+    return v;
+}
+
+int Union(int x, int y){
+    if(x!=y){
+        if(x<y){
+            parent[y]=x;
+        }
+        else{
+            parent[x]=y;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+int main(){
+    int n;
+    printf("Enter number of vertices: ");
+    scanf("%d",&n);
+    printf("Enter adjacency matrix: \n");
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            scanf("%d",&G[i][j]);
+            if(G[i][j]==0){
+                G[i][j]=999;
+            }
+        }
+    }
+
+    while(ne<n-1){
+        min=999;
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                if(G[i][j]<min){
+                    min=G[i][j];
+                    a=u=i;
+                    b=v=j;
+                }
+            }
+    }
+            u=findParent(u);
+            v=findParent(v);
+    if(Union(u,v)){
+        printf("\nEdge %d : %d-%d Distance %d",ne++,a,b,min);
+        mincost=mincost+min;
+    }
+    G[a][b]=G[b][a]=999;
+    }
+    printf("\nMinimum cost: %d\n",mincost);
+}
+
+//DIJKSTRAS LIST
+#include<stdio.h>
+#include<stdlib.h>
+
+#define INF 999
+
+typedef struct Node {
+    int vertex;
+    int weight;
+    struct Node* next;
+} Node;
+
+typedef struct Graph {
+    int numVertices;
+    Node** adjLists;
+} Graph;
+
+typedef struct MinHeapNode {
+    int vertex;
+    int dist;
+} MinHeapNode;
+
+typedef struct MinHeap {
+    int size;
+    int capacity;
+    int *pos;
+    MinHeapNode **array;
+} MinHeap;
+
+Node* createNode(int v, int weight) {
+    Node* newNode = malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->weight = weight;
+    newNode->next = NULL;
+    return newNode;
+}
+
+Graph* createGraph(int vertices) {
+    Graph* graph = malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = malloc(vertices * sizeof(Node*));
+    for (int i = 0; i < vertices; i++)
+        graph->adjLists[i] = NULL;
+    return graph;
+}
+
+void addEdge(Graph* graph, int src, int dest, int weight) {
+    Node* newNode = createNode(dest, weight);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+
+    newNode = createNode(src, weight);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+
+MinHeapNode* newMinHeapNode(int v, int dist) {
+    MinHeapNode* minHeapNode = (MinHeapNode*) malloc(sizeof(MinHeapNode));
+    minHeapNode->vertex = v;
+    minHeapNode->dist = dist;
+    return minHeapNode;
+}
+
+MinHeap* createMinHeap(int capacity) {
+    MinHeap* minHeap = (MinHeap*) malloc(sizeof(MinHeap));
+    minHeap->pos = (int *)malloc(capacity * sizeof(int));
+    minHeap->size = 0;
+    minHeap->capacity = capacity;
+    minHeap->array = (MinHeapNode**) malloc(capacity * sizeof(MinHeapNode*));
+    return minHeap;
+}
+
+void swapMinHeapNode(MinHeapNode** a, MinHeapNode** b) {
+    MinHeapNode* t = *a;
+    *a = *b;
+    *b = t;
+}
+
+void minHeapify(MinHeap* minHeap, int idx) {
+    int smallest, left, right;
+    smallest = idx;
+    left = 2 * idx + 1;
+    right = 2 * idx + 2;
+
+    if (left < minHeap->size && minHeap->array[left]->dist < minHeap->array[smallest]->dist)
+        smallest = left;
+
+    if (right < minHeap->size && minHeap->array[right]->dist < minHeap->array[smallest]->dist)
+        smallest = right;
+
+    if (smallest != idx) {
+        MinHeapNode *smallestNode = minHeap->array[smallest];
+        MinHeapNode *idxNode = minHeap->array[idx];
+
+        minHeap->pos[smallestNode->vertex] = idx;
+        minHeap->pos[idxNode->vertex] = smallest;
+
+        swapMinHeapNode(&minHeap->array[smallest], &minHeap->array[idx]);
+
+        minHeapify(minHeap, smallest);
+    }
+}
+
+int isEmpty(MinHeap* minHeap) {
+    return minHeap->size == 0;
+}
+
+MinHeapNode* extractMin(MinHeap* minHeap) {
+    if (isEmpty(minHeap))
+        return NULL;
+
+    MinHeapNode* root = minHeap->array[0];
+
+    MinHeapNode* lastNode = minHeap->array[minHeap->size - 1];
+    minHeap->array[0] = lastNode;
+
+    minHeap->pos[root->vertex] = minHeap->size - 1;
+    minHeap->pos[lastNode->vertex] = 0;
+
+    --minHeap->size;
+    minHeapify(minHeap, 0);
+
+    return root;
+}
+
+void decreaseKey(MinHeap* minHeap, int v, int dist) {
+    int i = minHeap->pos[v];
+    minHeap->array[i]->dist = dist;
+
+    while (i && minHeap->array[i]->dist < minHeap->array[(i - 1) / 2]->dist) {
+        minHeap->pos[minHeap->array[i]->vertex] = (i - 1) / 2;
+        minHeap->pos[minHeap->array[(i - 1) / 2]->vertex] = i;
+        swapMinHeapNode(&minHeap->array[i], &minHeap->array[(i - 1) / 2]);
+
+        i = (i - 1) / 2;
+    }
+}
+
+int isInMinHeap(MinHeap* minHeap, int v) {
+    if (minHeap->pos[v] < minHeap->size)
+        return 1;
+    return 0;
+}
+
+void printArr(int dist[], int n) {
+    printf("VERTEX\t\tSHORTEST DISTANCE\n");
+    for (int i = 0; i < n; ++i)
+        printf("%d \t\t %d\n", i, dist[i]);
+}
+
+void dijkstra(Graph* graph, int src) {
+    int V = graph->numVertices;
+    int dist[V];
+
+    MinHeap* minHeap = createMinHeap(V);
+
+    for (int v = 0; v < V; ++v) {
+        dist[v] = INF;
+        minHeap->array[v] = newMinHeapNode(v, dist[v]);
+        minHeap->pos[v] = v;
+    }
+
+    minHeap->array[src] = newMinHeapNode(src, dist[src]);
+    minHeap->pos[src] = src;
+    dist[src] = 0;
+    decreaseKey(minHeap, src, dist[src]);
+
+    minHeap->size = V;
+
+    while (!isEmpty(minHeap)) {
+        MinHeapNode* minHeapNode = extractMin(minHeap);
+        int u = minHeapNode->vertex;
+
+        Node* pCrawl = graph->adjLists[u];
+        while (pCrawl != NULL) {
+            int v = pCrawl->vertex;
+
+            if (isInMinHeap(minHeap, v) && dist[u] != INF && pCrawl->weight + dist[u] < dist[v]) {
+                dist[v] = dist[u] + pCrawl->weight;
+                decreaseKey(minHeap, v, dist[v]);
+            }
+            pCrawl = pCrawl->next;
+        }
+    }
+
+    printArr(dist, V);
+}
+
+int main() {
+    int V, E, src, dest, weight, start;
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+    printf("Enter number of edges: ");
+    scanf("%d", &E);
+
+    Graph* graph = createGraph(V);
+
+    for (int i = 0; i < E; i++) {
+        printf("Enter edge %d (src dest weight): ", i + 1);
+        scanf("%d %d %d", &src, &dest, &weight);
+        addEdge(graph, src, dest, weight);
+    }
+
+    printf("Enter the starting node: ");
+    scanf("%d", &start);
+
+    dijkstra(graph, start);
+
+    return 0;
+}
+
+
+//DIJKSTRAS MATRIX
+#include<stdio.h>
+#include<conio.h>
+void dijkstras(int G[10][10], int v, int s){
+    int visited[10];
+    int distance[10];
+    int prev[10];
+    for(int i=0;i<v;i++){
+        for(int j=0;j<v;j++){
+        if(G[i][j]==0)
+            G[i][j]=999;
+        }
+    }
+    for(int i=0;i<v;i++){
+        distance[i]=G[s][i];
+        prev[i]=s;
+        visited[i]=0;
+    }
+    int count=1;
+    distance[s]=0;
+    visited[s]=1;
+    while(count<v-1){
+    int nextNode;
+    int min=999;
+    for(int i=0;i<v;i++){
+        if(distance[i]<min && visited[i]==0){
+            nextNode=i;
+            min=distance[i];
+        }
+    }
+        visited[nextNode]=1;
+        for(int i=0;i<v;i++){
+            if(visited[i]!=1){
+                if(min+G[nextNode][i]<distance[i]){
+                    distance[i] = min+G[nextNode][i];
+                    prev[i]=nextNode;
+                }
+            }
+        }
+        count++;
+    }
+    for(int i=0;i<v;i++){
+        if(i!=s){
+            printf("\nDistance of node %d = %d",i,distance[i]);
+            printf("\nPath: %d",i);
+            int j=i;
+            while(j!=s){
+                j=prev[j];
+                printf("<--%d",j);
+            }
+        }
+    }
+}
+
+int main(){
+    int G[10][10],v,u;
+    printf("Enter number of vertices: ");
+    scanf("%d",&v);
+    printf("\nEnter the adjacency matrix:\n");
+    for(int i=0;i<v;i++){
+        for(int j=0;j<v;j++){
+            scanf("%d",&G[i][j]);
+        }
+    }
+    printf("\nEnter the starting node:");
+    scanf("%d",&u);
+    dijkstras(G,v,u);
+    return 0;
+}

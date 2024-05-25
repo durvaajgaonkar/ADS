@@ -1,0 +1,142 @@
+//dll insert n delete
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure for the doubly linked list
+struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to insert a node at the front of the list
+void insertFront(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    if (*head != NULL) {
+        newNode->next = *head;
+        (*head)->prev = newNode;
+    }
+    *head = newNode;
+}
+
+// Function to insert a node at the end of the list
+void insertEnd(struct Node** head, int data) {
+    struct Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    struct Node* temp = *head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+// Function to insert a node after a given node
+void insertAfter(struct Node* prevNode, int data) {
+    if (prevNode == NULL) {
+        printf("Previous node cannot be NULL.\n");
+        return;
+    }
+    struct Node* newNode = createNode(data);
+    newNode->next = prevNode->next;
+    newNode->prev = prevNode;
+    if (prevNode->next != NULL) {
+        prevNode->next->prev = newNode;
+    }
+    prevNode->next = newNode;
+}
+
+// Function to delete a node from the front of the list
+void deleteFront(struct Node** head) {
+    if (*head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    struct Node* temp = *head;
+    *head = (*head)->next;
+    if (*head != NULL) {
+        (*head)->prev = NULL;
+    }
+    free(temp);
+}
+
+// Function to delete a node from the end of the list
+void deleteEnd(struct Node** head) {
+    if (*head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    struct Node* temp = *head;
+    if (temp->next == NULL) {
+        *head = NULL;
+        free(temp);
+        return;
+    }
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->prev->next = NULL;
+    free(temp);
+}
+
+// Function to delete a node given a reference to it
+void deleteNode(struct Node** head, struct Node* delNode) {
+    if (*head == NULL || delNode == NULL) {
+        printf("Node to be deleted cannot be NULL.\n");
+        return;
+    }
+    if (*head == delNode) {
+        *head = delNode->next;
+    }
+    if (delNode->next != NULL) {
+        delNode->next->prev = delNode->prev;
+    }
+    if (delNode->prev != NULL) {
+        delNode->prev->next = delNode->next;
+    }
+    free(delNode);
+}
+
+// Function to display the list
+void displayList(struct Node* node) {
+    while (node != NULL) {
+        printf("%d ", node->data);
+        node = node->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Node* head = NULL;
+
+    // Insertion operations
+    insertEnd(&head, 1);
+    insertEnd(&head, 2);
+    insertFront(&head, 0);
+    insertAfter(head->next, 1); // Inserting after the second node (value 1)
+
+    printf("List after insertions: ");
+    displayList(head);
+
+    // Deletion operations
+    deleteFront(&head);
+    deleteEnd(&head);
+    deleteNode(&head, head->next); // Deleting the second node
+
+    printf("List after deletions: ");
+    displayList(head);
+
+    return 0;
+}

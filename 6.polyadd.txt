@@ -1,0 +1,104 @@
+//polynomial linked list
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node{
+ int coefficient;
+ int exponent;
+ struct node* next;
+};
+
+struct node* create(int coefficient,int exponent){
+ struct node* newNode=(struct node*)malloc(sizeof(struct node));
+ newNode->coefficient=coefficient;
+ newNode->exponent=exponent;
+ newNode->next=NULL;
+ return newNode;
+};
+
+
+struct node* insertNode(struct node** poly,int coefficient,int exponent){
+  struct node* newNode=create(coefficient,exponent);
+  if(*poly==NULL){
+    *poly=newNode;
+  }
+  else{
+    struct node* temp=*poly;
+    while(temp->next!=NULL){
+        temp=temp->next;
+
+    }temp->next=newNode;
+  }
+};
+
+struct node* addPolynomial(struct node* poly1,struct node* poly2){
+  struct node* result=NULL;
+  while(poly1!=NULL && poly2!=NULL){
+    if(poly1->exponent>poly2->exponent){
+         insertNode(&result, poly1->coefficient,poly1->exponent);
+            poly1 = poly1->next;
+    }
+    else if(poly1->exponent<poly2->exponent){
+        insertNode(&result,poly2->coefficient,poly2->exponent);
+        poly2=poly2->next;
+    }
+    else {
+        insertNode(&result,poly1->coefficient+poly2->coefficient,poly1->exponent);
+        poly1=poly1->next;
+        poly2=poly2->next;
+    }
+  }
+
+  while(poly1!=NULL){
+    insertNode(&result,poly1->coefficient,poly1->exponent);
+    poly1=poly1->next;
+  }
+  while(poly2!=NULL){
+    insertNode(&result,poly2->coefficient,poly2->exponent);
+    poly2=poly2->next;
+  }
+  return result;
+};
+
+void display(struct node* poly){
+  while(poly->next!=NULL){
+    printf("%dx^%d",poly->coefficient,poly->exponent);
+    poly=poly->next;
+     if (poly != NULL) {
+            printf("+ ");
+        }
+    printf("\n");
+  }
+}
+
+int main() {
+    int t1, t2, coefficient, exponent;
+    struct node* poly1 = NULL;
+    struct node* poly2 = NULL;
+
+    printf("Enter the number of terms in poly1 and poly2: ");
+    scanf("%d %d", &t1, &t2);
+
+    for (int i = 0; i < t1; i++) {
+        printf("Enter the coefficient and the exponent in poly1: ");
+        scanf("%d %d", &coefficient, &exponent);
+        insertNode(&poly1, coefficient, exponent);
+    }
+
+    for (int i = 0; i < t2; i++) {
+        printf("Enter the coefficient and the exponent in poly2: ");
+        scanf("%d %d", &coefficient, &exponent);
+        insertNode(&poly2, coefficient, exponent);
+    }
+
+    printf("Poly1: ");
+    display(poly1);
+    printf("Poly2: ");
+    display(poly2);
+
+    struct node* sum = addPolynomial(poly1, poly2);
+    printf("Sum of polynomials: ");
+    display(sum);
+
+    return 0;
+}

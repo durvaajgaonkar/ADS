@@ -1,0 +1,212 @@
+//Linear Probing and Chaining (Without Replacement)
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<limits.h>
+
+void init(int table[][3], int numRows){
+    for(int i = 0; i<numRows; i++){
+        table[i][0] = i;
+        table[i][1] = INT_MIN;
+        table[i][2] = -1;
+    }
+}
+
+void printTable(int table[][3], int numRows){
+    printf("\nTable:\n");
+    for(int i = 0; i<numRows; i++){
+        printf("%d  %d  %d\n", table[i][0], table[i][1], table[i][2]);
+    }
+    printf("\n");
+}
+
+void insertWithoutReplacement(int table[][3], int numRows, int key){
+    int hash = key % numRows;
+    int count = 0;
+    while (count < numRows) {
+        if (table[hash][1] == INT_MIN) {
+            table[hash][1] = key;
+            break;
+        } else {
+            hash = (hash + 1) % numRows;
+            count++;
+        }
+    }
+
+    if (count == numRows) {
+        printf("Table cannot accommodate more.\n");
+    }
+}
+
+int main(){
+    int numRows = 10;
+    int table[numRows][3];
+    init(table, numRows);
+    int choice, key;
+
+    do {
+    printf("\nHash Table Operations:\n");
+    printf("1. Insert with Linear Probing and Chaining (Without Replacement)\n");
+    printf("2. Print Hash Table\n");
+    printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter key to insert: ");
+                scanf("%d", &key);
+                insertWithoutReplacement(table, numRows, key);
+                break;
+            case 2:
+                printTable(table, numRows);
+                break;
+            case 3:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}
+
+//Linear Probing and Chaining (With Replacement)
+#include<stdio.h>
+#include<stdlib.h>
+#include<limits.h>
+
+void init(int table[][3], int numRows){
+    for(int i = 0; i<numRows; i++){
+        table[i][0] = i;
+        table[i][1] = INT_MIN;
+        table[i][2] = -1;
+    }
+}
+
+void printTable(int table[][3], int numRows){
+    printf("\nTable:\n");
+    for(int i = 0; i<numRows; i++){
+        printf("%d  %d  %d\n", table[i][0], table[i][1], table[i][2]);
+    }
+    printf("\n");
+}
+
+void insert(int table[][3], int numRows, int key){
+    int hash = key%numRows;
+    if(table[hash][1]==INT_MIN) table[hash][1] = key;
+    else{
+        int natural = 0;
+        if(table[hash][1]%numRows==hash) natural = 1;
+        int count = 1;
+        int chain;
+        if(natural==1){
+            while(table[hash][2]!=-1 && count<numRows*0.8){
+                hash = table[hash][2];
+                count++;
+            }
+            chain = hash;
+        }
+        while(count<numRows*0.8)
+        {
+            hash = (hash + 1)%numRows;
+            if(table[hash][1] == INT_MIN){
+                table[hash][1] = key;
+                if(natural==1) table[chain][2] = hash;
+                break;
+            }
+            count++;
+        }
+
+
+        if(count==(int)(numRows*0.8)) printf("Table cannot accommodate more.\n");
+    }
+}
+
+void insertWithReplacement(int table[][3], int numRows, int key){
+    int hash = key%numRows;
+    if(table[hash][1]==INT_MIN) table[hash][1] = key;
+    else{
+        int natural = 0;
+        if(table[hash][1]%numRows==hash) natural = 1;
+        int count = 1;
+        int chain;
+        if(natural==1){
+            while(table[hash][2]!=-1 && count<numRows*0.8){
+                hash = table[hash][2];
+                count++;
+            }
+            chain = hash;
+            while(count<numRows){
+                hash = (hash + 1)%numRows;
+                if(table[hash][1] == INT_MIN){
+                    table[hash][1] = key;
+                    table[chain][2] = hash;
+                    break;
+                }
+                count++;
+
+                if(count==(int)(numRows*0.8)) printf("Table cannot accommodate more.\n");
+            }
+
+        }
+        else{
+            int temp, newHash;
+            temp = table[hash][1];
+            table[hash][1] = key;
+            newHash = temp%numRows;
+            while(table[newHash][2]!=hash && count<numRows*0.8){
+                newHash = table[newHash][2];
+                count++;
+            }
+            chain = newHash;
+            while(count<numRows*0.8)
+            {
+                newHash = (newHash + 1)%numRows;
+                if(table[newHash][1] == INT_MIN){
+                    table[newHash][1] = temp;
+                    table[chain][2] = newHash;
+                    break;
+                }
+                count++;
+            }
+            if(count==(int)(numRows*0.8)) printf("Table cannot accommodate more.\n");
+        }
+
+    }
+}
+
+int main(){
+    int numRows = 10;
+    int table[numRows][3];
+    init(table, numRows);
+    int choice, key;
+
+    do {
+    printf("\nHash Table Operations:\n");
+    printf("1. Insert with Linear Probing and Chaining (With Replacement)\n");
+    printf("2. Print Hash Table\n");
+    printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter key to insert: ");
+                scanf("%d", &key);
+                insertWithReplacement(table, numRows, key);
+                break;
+            case 2:
+                printTable(table, numRows);
+                break;
+            case 3:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}

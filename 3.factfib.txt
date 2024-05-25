@@ -1,0 +1,79 @@
+//factfibonacci
+#include <stdio.h>
+#define MAX 100
+
+struct stack {
+    int top;
+    int arr[MAX];
+};
+
+void initialize(struct stack* s) {
+    s->top = -1;
+}
+
+void push(struct stack* s, int value) {
+    if (s->top == MAX - 1) {
+        printf("\nOverflow");
+    } else {
+        s->arr[++s->top] = value;
+    }
+}
+
+int pop(struct stack* s) {
+    int x = -1;
+    if (s->top == -1) {
+        printf("\nUnderflow");
+    } else {
+        x = s->arr[s->top--];
+    }
+    return x;
+}
+
+void calculatefactorial(struct stack* s, int value) {
+    int result = 1;
+    for (int i = value; i >= 1; i--) {
+        push(s, i);
+    }
+    while (s->top != -1) {
+        result *= pop(s);
+    }
+    printf("\nFactorial: %d\n", result);
+}
+
+void fibonacci(int n) {
+    struct stack s;
+    initialize(&s);
+    int a=0;
+    int b=1;
+    int next;
+    push(&s,a);
+    push(&s,b);
+    for(int i=2;i<n;i++){
+        next=a+b;
+        push(&s,next);
+        a=b;
+        b=next;
+    }
+    struct stack rev;
+    initialize(&rev);
+    while(s.top!=-1){
+        push(&rev,pop(&s));
+    }
+    printf("\nThe fibonacci series: ");
+    for(int i=0;i<n;i++){
+        int result=pop(&rev);
+        printf("%d",result);
+    }
+}
+
+int main() {
+    struct stack s;
+    initialize(&s);
+    int value;
+    printf("Enter the number whose factorial is to be calculated: ");
+    scanf("%d", &value);
+    calculatefactorial(&s, value);
+    
+    fibonacci(value);
+    return 0;
+}

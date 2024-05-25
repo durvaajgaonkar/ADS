@@ -1,0 +1,68 @@
+//  Implement Push and POP operations of STACK on Doubly linked lists
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 30
+
+struct node{
+ int data;
+ struct node* prev;
+ struct node* next;
+};
+
+struct node* create(int data){
+  struct node* newNode=(struct node*)malloc(sizeof(struct node));
+  newNode->data=data;
+  newNode->prev=NULL;
+  newNode->next=NULL;
+  return newNode;
+};
+
+struct node* push(struct node** top,int data){
+   struct node* newNode=create(data);
+   if(*top!=NULL){
+    (*top)->next=newNode;
+    newNode->prev=*top;
+   }
+   *top=newNode;
+};
+
+int pop(struct node** top){
+  if(*top==NULL){
+    printf("Underflow");
+    exit(1);
+  }
+  struct node* temp=*top;
+  int data=temp->data;
+  (*top)=(*top)->prev;
+  if((*top)!=NULL){
+    (*top)->next=NULL;
+  }
+  free(temp);
+  return data;
+}
+
+void displaystack(struct node* top){
+  printf("\n");
+   while(top!=NULL){
+    printf("%d",top->data);
+    top=top->prev;
+   }
+}
+
+int main(){
+ struct node* Node=NULL;
+ push(&Node,10);
+ push(&Node,12);
+ push(&Node,15);
+ push(&Node,45);
+ printf("\nStack elements:");
+
+ displaystack(Node);
+ printf("\nAfter pop operation 1:%d",pop(&Node));
+  printf("\nAfter pop operation 2:%d",pop(&Node));
+}
+
+
+

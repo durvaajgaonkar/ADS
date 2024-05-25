@@ -1,0 +1,98 @@
+
+//Write an iterative Reverse() function that reverses a list by rearranging all the next pointers and the head pointer.
+//Ideally, Reverse() should only need to make one pass of the list.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition for singly-linked list node
+struct ListNode {
+    int val;
+    struct ListNode *next;
+};
+
+// Function to reverse the singly linked list
+struct ListNode* Reverse(struct ListNode* head) {
+    struct ListNode* prev = NULL;
+    struct ListNode* current = head;
+    struct ListNode* next = NULL;
+
+    while (current != NULL) {
+        // Store next node
+        next = current->next;
+
+        // Reverse current node's pointer
+        current->next = prev;
+
+        // Move pointers one position ahead
+        prev = current;
+        current = next;
+    }
+
+    // Update head to the new front
+    head = prev;
+    return head;
+}
+
+// Function to create a new node
+struct ListNode* createNode(int val) {
+    struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newNode->val = val;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to print the list
+void printList(struct ListNode* head) {
+    struct ListNode* temp = head;
+    while (temp != NULL) {
+        printf("%d -> ", temp->val);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    int n, val;
+    struct ListNode* head = NULL;
+    struct ListNode* tail = NULL;
+
+    // Taking input for the number of elements
+    printf("Enter the number of elements in the list: ");
+    scanf("%d", &n);
+
+    // Taking input for each element
+    for (int i = 0; i < n; i++) {
+        printf("Enter element %d: ", i + 1);
+        scanf("%d", &val);
+
+        struct ListNode* newNode = createNode(val);
+        if (head == NULL) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    printf("Original List: ");
+    printList(head);
+
+    // Reverse the list
+    head = Reverse(head);
+
+    printf("Reversed List: ");
+    printList(head);
+
+    // Free allocated memory
+    struct ListNode* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+
+    return 0;
+}
+

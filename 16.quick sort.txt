@@ -1,0 +1,65 @@
+#include <stdio.h>
+struct stud {
+    int roll_no;
+    char name[20];
+    float cgpa;
+};
+
+void swap(struct stud *arr, int i, int j) {
+    struct stud temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+int partition(struct stud *arr, int low, int high) {
+    int pivot = arr[low].roll_no;
+    int i = low+1;
+    int j = high;
+    while(i<=j){
+        while (arr[i].roll_no <= pivot) {
+        i++;
+    }
+    while (arr[j].roll_no > pivot) {
+        j--;
+    }
+    if(i<=j){
+        swap(arr, i, j);
+    }
+    }
+        swap(arr,j,low);
+        return j;
+}
+
+void quicksort(struct stud *arr, int low, int high) {
+    if (low < high) {
+        int j = partition(arr, low, high);
+        quicksort(arr, low, j - 1);
+        quicksort(arr, j + 1, high);
+    }
+}
+
+int main() {
+    int size;
+
+    printf("Enter the number of students: ");
+    scanf("%d", &size);
+
+    struct stud students[size];
+
+    printf("Enter roll number, name, and cgpa of each student:\n");
+    for (int i = 0; i < size; i++) {
+        scanf("%d %s %f", &students[i].roll_no, students[i].name, &students[i].cgpa);
+    }
+
+    quicksort(students, 0, size - 1);
+
+    printf("Sorted array based on roll number:\n");
+    for (int i = 0; i < size; i++) {
+        printf("Roll Number: %d, Name: %s, CGPA: %.2f\n", students[i].roll_no, students[i].name, students[i].cgpa);
+    }
+    return 0;
+}
+
+
+
+

@@ -1,0 +1,82 @@
+//Implement ADD and DELETE operations of QUEUE on Doubly linked lists
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure for doubly linked list
+struct node {
+    int data;
+    struct node* prev;
+    struct node* next;
+};
+
+// Function to create a new node
+struct node* createNode(int data) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to add an element to the end of the queue (enqueue)
+void enqueue(struct node** front, struct node** rear, int data) {
+    struct node* newNode = createNode(data);
+    if (*rear == NULL) {
+        *front = *rear = newNode;
+    } else {
+        (*rear)->next = newNode;
+        newNode->prev = *rear;
+        *rear = newNode;
+    }
+}
+
+// Function to remove and return the element from the front of the queue (dequeue)
+int dequeue(struct node** front, struct node** rear) {
+    if (*front == NULL) {
+        printf("Queue underflow!\n");
+        exit(1);
+    }
+    struct node* temp = *front;
+    int data = temp->data;
+    *front = (*front)->next;
+    if (*front != NULL) {
+        (*front)->prev = NULL;
+    } else {
+        *rear = NULL;
+    }
+    free(temp);
+    return data;
+}
+
+// Function to display the contents of the queue
+void displayQueue(struct node* front) {
+    printf("Queue: ");
+    while (front != NULL) {
+        printf("%d ", front->data);
+        front = front->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct node* front = NULL;
+    struct node* rear = NULL;
+
+    enqueue(&front, &rear, 10);
+    enqueue(&front, &rear, 20);
+    enqueue(&front, &rear, 30);
+    enqueue(&front, &rear, 40);
+
+    displayQueue(front);
+
+    printf("Dequeued element: %d\n", dequeue(&front, &rear));
+    printf("Dequeued element: %d\n", dequeue(&front, &rear));
+
+    displayQueue(front);
+
+    return 0;
+}

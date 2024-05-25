@@ -1,0 +1,107 @@
+//merging two LL
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node{
+  int data;
+  struct node* prev;
+  struct node* next;
+};
+
+struct node* create(int data){
+   struct node* newNode=(struct node*)malloc(sizeof(struct node));
+   newNode->data=data;
+   newNode->prev=NULL;
+   newNode->next=NULL;
+   return newNode;
+};
+
+struct node* insert(struct node** head,int data){
+     struct node* newNode=create(data);
+     if(*head==NULL){
+        *head=newNode;
+        return newNode;
+     }
+
+     struct node* temp=*head;
+     while(temp->next!=NULL){
+        temp=temp->next;
+     }
+     temp->next=newNode;
+     newNode->prev=temp;
+     newNode->next=NULL;
+     return newNode;
+};
+
+void displayList(struct node* Node){
+   while(Node!=NULL){
+    printf("%d ",Node->data);
+    Node=Node->next;
+   }
+   printf("\n");
+}
+
+struct node* mergesortedlists(struct node* head1,struct node* head2){
+  if(head1==NULL){
+    return head1;
+  }
+  if(head2==NULL){
+    return head2;
+  }
+  struct node* mergedhead=NULL;
+  if(head1->data<head2->data){
+    mergedhead=head1;
+    head1=head1->next;
+  }
+  else{
+    mergedhead=head2;
+    head2=head2->next;
+  }
+  struct node* temp=mergedhead;
+  while(head1!=NULL && head2!=NULL){
+    if(head1->data>head2->data){
+        temp->next=head1;
+        head1->prev=temp;
+        head1=head1->next;
+    }
+     else if(head1->data<head2->data){
+        temp->next=head2;
+        head2->prev=temp;
+        head2=head2->next;
+    }
+    temp=temp->next;
+  }
+
+  if(head1!=NULL){
+    temp->next=head1;
+    head1->prev=temp;
+    head1=head1->next;
+  }
+ else if(head2!=NULL){
+    temp->next=head2;
+    head2->prev=temp;
+     head2=head2->next;
+  }
+  return mergedhead;
+};
+
+int main(){
+struct node* list1=NULL;
+struct node* list2=NULL;
+
+insert(&list1,1);
+insert(&list1,6);
+insert(&list1,60);
+
+insert(&list2,8);
+insert(&list2,9);
+insert(&list2,30);
+printf("The list1:");
+displayList(list1);
+printf("The list2:");
+displayList(list2);
+
+struct node* mergedlist=mergesortedlists(list1,list2);
+displayList(mergedlist);
+return 0;
+}

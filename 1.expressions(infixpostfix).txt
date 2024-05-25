@@ -1,0 +1,405 @@
+//1.)INFIX TO POSTFIX
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+// Stack structure for storing characters (for operators and parentheses)
+typedef struct {
+    int top;
+    char items[MAX];
+} CharStack;
+
+// Stack structure for storing integers (for evaluation)
+typedef struct {
+    int top;
+    int items[MAX];
+} IntStack;
+
+// Function to initialize the character stack
+void initCharStack(CharStack* s) {
+    s->top = -1;
+}
+
+// Function to initialize the integer stack
+void initIntStack(IntStack* s) {
+    s->top = -1;
+}
+
+// Function to push a character onto the stack
+void pushChar(CharStack* s, char value) {
+    if (s->top < MAX - 1) {
+        s->items[++(s->top)] = value;
+    } else {
+        printf("Stack Overflow\n");
+    }
+}
+
+// Function to push an integer onto the stack
+void pushInt(IntStack* s, int value) {
+    if (s->top < MAX - 1) {
+        s->items[++(s->top)] = value;
+    } else {
+        printf("Stack Overflow\n");
+    }
+}
+
+// Function to pop a character from the stack
+char popChar(CharStack* s) {
+    if (s->top >= 0) {
+        return s->items[(s->top)--];
+    } else {
+        printf("Stack Underflow\n");
+        return '\0';
+    }
+}
+
+// Function to pop an integer from the stack
+int popInt(IntStack* s) {
+    if (s->top >= 0) {
+        return s->items[(s->top)--];
+    } else {
+        printf("Stack Underflow\n");
+        return -1;
+    }
+}
+
+// Function to get the precedence of operators
+int precedence(char op) {
+    switch (op) {
+        case '+':
+        case '-':
+            return 1;
+        case '*':
+        case '/':
+            return 2;
+        case '^':
+            return 3;
+        default:
+            return 0;
+    }
+}
+
+// Function to check if the character is an operator
+int isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+
+// Function to convert infix expression to postfix expression
+void infixToPostfix(char infix[], char postfix[]) {
+    CharStack s;
+    initCharStack(&s);
+    int k = 0;
+
+    for (int i = 0; infix[i] != '\0'; i++) {
+        char ch = infix[i];
+
+        // If the character is an operand, add it to the postfix expression
+        if (isalnum(ch)) {
+            postfix[k++] = ch;
+        }
+        // If the character is '(', push it onto the stack
+        else if (ch == '(') {
+            pushChar(&s, ch);
+        }
+        // If the character is ')', pop and add to postfix until '(' is found
+        else if (ch == ')') {
+            while (s.top != -1 && s.items[s.top] != '(') {
+                postfix[k++] = popChar(&s);
+            }
+            popChar(&s); // Remove '(' from stack
+        }
+        // If the character is an operator
+        else if (isOperator(ch)) {
+            while (s.top != -1 && precedence(s.items[s.top]) >= precedence(ch)) {
+                postfix[k++] = popChar(&s);
+            }
+            pushChar(&s, ch);
+        }
+    }
+
+    // Pop all remaining operators from the stack
+    while (s.top != -1) {
+        postfix[k++] = popChar(&s);
+    }
+    postfix[k] = '\0'; // Null terminate the postfix expression
+}
+
+// Function to evaluate postfix expression
+int evaluatePostfix(char postfix[]) {
+    IntStack s;
+    initIntStack(&s);
+
+    for (int i = 0; postfix[i] != '\0'; i++) {
+        char ch = postfix[i];
+
+        // If the character is an operand, push it onto the stack
+        if (isdigit(ch)) {
+            pushInt(&s, ch - '0');
+        }
+        // If the character is an operator, pop two operands and perform the operation
+        else if (isOperator(ch)) {
+            int val2 = popInt(&s);
+            int val1 = popInt(&s);
+            switch (ch) {
+                case '+':
+                    pushInt(&s, val1 + val2);
+                    break;
+                case '-':
+                    pushInt(&s, val1 - val2);
+                    break;
+                case '*':
+                    pushInt(&s, val1 * val2);
+                    break;
+                case '/':
+                    pushInt(&s, val1 / val2);
+                    break;
+                case '^':
+                    pushInt(&s, (int) pow(val1, val2));
+                    break;
+            }
+        }
+    }
+
+    // The final result is the remaining value in the stack
+    return popInt(&s);
+}
+
+int main() {
+    char infix[MAX], postfix[MAX];
+
+    printf("Enter infix expression: ");
+    scanf("%s", infix);
+
+    infixToPostfix(infix, postfix);
+    printf("Postfix expression: %s\n", postfix);
+
+    int result = evaluatePostfix(postfix);
+    printf("Evaluation result: %d\n", result);
+
+    return 0;
+}
+
+
+//2.INFIX TO PREFIX
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <math.h>
+
+#define MAX 100
+// Stack structure for storing characters (for operators and parentheses)
+typedef struct {
+    int top;
+    char items[MAX];
+} CharStack;
+
+// Stack structure for storing integers (for evaluation)
+typedef struct {
+    int top;
+    int items[MAX];
+} IntStack;
+
+// Function to initialize the character stack
+void initCharStack(CharStack* s) {
+    s->top = -1;
+}
+
+// Function to initialize the integer stack
+void initIntStack(IntStack* s) {
+    s->top = -1;
+}
+
+// Function to push a character onto the stack
+void pushChar(CharStack* s, char value) {
+    if (s->top < MAX - 1) {
+        s->items[++(s->top)] = value;
+    } else {
+        printf("Stack Overflow\n");
+    }
+}
+
+// Function to push an integer onto the stack
+void pushInt(IntStack* s, int value) {
+    if (s->top < MAX - 1) {
+        s->items[++(s->top)] = value;
+    } else {
+        printf("Stack Overflow\n");
+    }
+}
+
+// Function to pop a character from the stack
+char popChar(CharStack* s) {
+    if (s->top >= 0) {
+        return s->items[(s->top)--];
+    } else {
+        printf("Stack Underflow\n");
+        return '\0';
+    }
+}
+
+// Function to pop an integer from the stack
+int popInt(IntStack* s) {
+    if (s->top >= 0) {
+        return s->items[(s->top)--];
+    } else {
+        printf("Stack Underflow\n");
+        return -1;
+    }
+}
+
+// Function to get the precedence of operators
+int precedence(char op) {
+    switch (op) {
+        case '+':
+        case '-':
+            return 1;
+        case '*':
+        case '/':
+            return 2;
+        case '^':
+            return 3;
+        default:
+            return 0;
+    }
+}
+
+// Function to check if the character is an operator
+int isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+
+// Function to reverse a string
+void reverseString(char* str) {
+    int n = strlen(str);
+    for (int i = 0; i < n / 2; i++) {
+        char temp = str[i];
+        str[i] = str[n - i - 1];
+        str[n - i - 1] = temp;
+    }
+}
+
+// Function to convert infix expression to postfix expression
+void infixToPostfix(char infix[], char postfix[]) {
+    CharStack s;
+    initCharStack(&s);
+    int k = 0;
+
+    for (int i = 0; infix[i] != '\0'; i++) {
+        char ch = infix[i];
+
+        // If the character is an operand, add it to the postfix expression
+        if (isalnum(ch)) {
+            postfix[k++] = ch;
+        }
+        // If the character is '(', push it onto the stack
+        else if (ch == '(') {
+            pushChar(&s, ch);
+        }
+        // If the character is ')', pop and add to postfix until '(' is found
+        else if (ch == ')') {
+            while (s.top != -1 && s.items[s.top] != '(') {
+                postfix[k++] = popChar(&s);
+            }
+            popChar(&s); // Remove '(' from stack
+        }
+        // If the character is an operator
+        else if (isOperator(ch)) {
+            while (s.top != -1 && precedence(s.items[s.top]) >= precedence(ch)) {
+                postfix[k++] = popChar(&s);
+            }
+            pushChar(&s, ch);
+        }
+    }
+
+    // Pop all remaining operators from the stack
+    while (s.top != -1) {
+        postfix[k++] = popChar(&s);
+    }
+    postfix[k] = '\0'; // Null terminate the postfix expression
+}
+
+// Function to convert infix expression to prefix expression
+void infixToPrefix(char infix[], char prefix[]) {
+    // Reverse the infix expression
+    reverseString(infix);
+
+    // Replace '(' with ')' and vice versa
+    for (int i = 0; infix[i] != '\0'; i++) {
+        if (infix[i] == '(') {
+            infix[i] = ')';
+        } else if (infix[i] == ')') {
+            infix[i] = '(';
+        }
+    }
+
+    // Get the postfix expression of the modified infix expression
+    char postfix[MAX];
+    infixToPostfix(infix, postfix);
+
+    // Reverse the postfix expression to get the prefix expression
+    strcpy(prefix, postfix);
+    reverseString(prefix);
+}
+
+// Function to evaluate prefix expression
+int evaluatePrefix(char prefix[]) {
+    IntStack s;
+    initIntStack(&s);
+    int n = strlen(prefix);
+
+    // Process the prefix expression from right to left
+    for (int i = n - 1; i >= 0; i--) {
+        char ch = prefix[i];
+
+        // If the character is an operand, push it onto the stack
+        if (isdigit(ch)) {
+            pushInt(&s, ch - '0');
+        }
+        // If the character is an operator, pop two operands and perform the operation
+        else if (isOperator(ch)) {
+            int val1 = popInt(&s);
+            int val2 = popInt(&s);
+            switch (ch) {
+                case '+':
+                    pushInt(&s, val1 + val2);
+                    break;
+                case '-':
+                    pushInt(&s, val1 - val2);
+                    break;
+                case '*':
+                    pushInt(&s, val1 * val2);
+                    break;
+                case '/':
+                    pushInt(&s, val1 / val2);
+                    break;
+                case '^':
+                    pushInt(&s, (int)pow(val1, val2));
+                    break;
+            }
+        }
+    }
+
+    // The final result is the remaining value in the stack
+    return popInt(&s);
+}
+
+int main() {
+    char infix[MAX], prefix[MAX];
+
+    printf("Enter infix expression: ");
+    scanf("%s", infix);
+
+    infixToPrefix(infix, prefix);
+    printf("Prefix expression: %s\n", prefix);
+
+    int result = evaluatePrefix(prefix);
+    printf("Evaluation result: %d\n", result);
+
+    return 0;
+}
+

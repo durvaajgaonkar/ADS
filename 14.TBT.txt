@@ -1,0 +1,125 @@
+//TBT
+#include<stdio.h>
+#include<stdlib.h>
+
+struct TBT{
+  int data,lBit,rBit;
+  struct TBT* left;
+  struct TBT* right;
+};
+
+struct TBT* insert(struct TBT* head,int data){
+  struct TBT* temp=(struct TBT* )malloc(sizeof(struct TBT));
+  struct TBT* p;
+  temp->data=data;
+  temp->lBit=temp->rBit=0;
+  if(head->lBit==0){
+    head->left=temp;
+    head->lBit=1;
+    temp->left=temp->right=head;
+    return head;
+  }
+  p=head->left;
+  while(1){
+    if(p->lBit==1 && p->data>temp->data){
+        p=p->left;
+    }
+     else if(p->rBit==1 && p->data<temp->data){
+        p=p->right;
+    }
+    else{
+        break;
+    }
+  }
+  if(p->data>temp->data){
+    temp->left=p->left;
+    temp->right=p;
+    p->lBit=1;
+    p->left=temp;
+  }
+  else if(p->data<temp->data){
+    temp->right=p->right;
+    temp->left=p;
+    p->rBit=1;
+    p->right=temp;
+  }
+  return head;
+}
+
+void pre_order(struct TBT* head){
+    struct TBT* p=head->left;
+    while(p!=head){
+      printf("%d ",p->data);
+      if(p->lBit==1){
+        p=p->left;
+      }
+     else if(p->rBit==1){
+        p=p->right;
+      }
+    else if(p->lBit==0){
+        while(p->rBit!=1){
+            p=p->right;
+        }
+          p=p->right;
+      }
+    }
+}
+
+void inorder(struct TBT* head) {
+    struct TBT* p = head->left;
+    while (p != head) {
+        if (p->lBit == 1) {
+            p = p->left;
+        } else if (p->rBit == 1) {
+            printf("%d ", p->data);
+            p = p->right;
+        } else if (p->lBit == 0 && p->rBit == 0) {
+            while (p->rBit != 1) {
+                printf("%d ", p->data);
+                p = p->right;
+            }
+            if(p->right!=head){
+            printf("%d ", p->data);
+            p = p->right;}
+        }
+    }
+
+}
+
+void postorder(struct TBT* head) {
+    struct TBT* p = head->left;
+    struct TBT* prev ;
+
+    while (p->right != head) {
+        if(p->lBit == 1) {
+            p = p->left;
+        }
+        if(p->right!=head){
+            prev=p->right;
+            p=p->right;
+            printf("%d",p->data);
+            printf("%d",prev->data);
+        }
+    }
+}
+
+
+int main(){
+    struct TBT* head=(struct TBT*)malloc(sizeof(struct TBT));
+    head->lBit=0;
+    head->rBit=1;
+    head->data=NULL;
+    head->right=head->left=head;
+    head=insert(head,30);
+    head=insert(head,40);
+    head=insert(head,20);
+    head=insert(head,10);
+    head=insert(head,16);
+    head=insert(head,37);
+    printf("The pre_order for the above TBT is:\n");
+    pre_order(head);
+    printf("\nThe inorder for the above TBT is:\n");
+    inorder(head);
+
+    return 0;
+}
