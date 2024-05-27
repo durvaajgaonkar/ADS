@@ -1,0 +1,103 @@
+// LINEAR PROBING 
+// WITH CHAINING
+// WITHOUT REPLACEMENT
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#define SIZE 10
+
+int hashFunction(int key) {
+    return key % SIZE;
+}
+
+void insert(int data[], int flag[], int chain[], int x, int *collisions) {
+    int i = 0, start, j;
+    start = hashFunction(x);
+
+    // Linear probing to find an empty slot
+    while (flag[start] && i < SIZE) {
+        if (data[start] % SIZE == x % SIZE) {
+            break;
+        }
+        i++;
+        start = (start + 1) % SIZE;
+        (*collisions)++;  // Increment collision counter
+    }
+
+    if (i == SIZE) {
+        printf("Hash Table is Full\n");
+        return;
+    }
+
+    if (!flag[start]) {
+        // Insert the key if an empty slot is found
+        data[start] = x;
+        flag[start] = 1;
+        chain[start] = -1;
+    } else {
+        // Find the end of the chain
+        j = start;
+        while (chain[j] != -1) {
+            j = chain[j];
+        }
+
+        // Find an empty slot
+        int emptySlot = start;
+        i = 0;
+        while (flag[emptySlot] && i < SIZE) {
+            emptySlot = (emptySlot + 1) % SIZE;
+            i++;
+            (*collisions)++;  // Increment collision counter
+        }
+
+        if (i == SIZE) {
+            printf("Hash Table is Full\n");
+            return;
+        }
+
+        // Insert the key in the empty slot
+        data[emptySlot] = x;
+        flag[emptySlot] = 1;
+        chain[emptySlot] = -1;
+        chain[j] = emptySlot;
+    }
+}
+
+void display(int data[], int flag[], int chain[]) {
+    printf("\nHash Table:\n");
+    printf("Index  Key  Chain\n");
+    for (int i = 0; i < SIZE; i++) {
+        if (flag[i]) {
+            printf("(%d)    %d    %d\n", i, data[i], chain[i]);
+        } else {
+            printf("(%d)    -    %d\n", i, chain[i]);
+        }
+    }
+}
+
+int main() {
+    int data[SIZE], flag[SIZE], chain[SIZE], i, x, op;
+    int collisions = 0;  // Initialize collision counter
+
+    // Initialize the arrays
+    for (i = 0; i < SIZE; i++) {
+        flag[i] = 0;
+        chain[i] = -1;
+    }
+
+    printf("Enter the number of keys to be inserted: ");
+    scanf("%d", &op);
+
+    for (i = 0; i < op; i++) {
+        printf("Enter key to be inserted: ");
+        scanf("%d", &x);
+        insert(data, flag, chain, x, &collisions);
+    }
+
+    display(data, flag, chain);
+    printf("Total collisions: %d\n", collisions);  // Display total collisions
+    return 0;
+}
